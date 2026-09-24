@@ -40,6 +40,19 @@ function verifyToken(req, res, next) {
 
 };
 
+function requireRole(role){
+    return function (req, res, next){
+        if(req.user.role !== role){
+            return res.status(403).send({status: "error", message: "Access Denied"});
+        }
+        next();
+    }
+}
+
+app.get("/seller-only", verifyToken, requireRole('seller'), (req, res) => {
+    res.send("Seller Only Content")
+});
+
 
 app.post("/signup", async (req, res) => {
     try{
@@ -81,7 +94,7 @@ app.post("/login", async (req, res) => {
         const passwordCheck = await bcrypt.compare(password, user.password_hash);
 
         if(passwordCheck){
-            const token = jwt.sign({ id: user.id, email: user.email}, process.env.JWT_SECRET, {expiresIn: '7d'});
+            const token = jwt.sign(...user, process.env.JWT_SECRET, {expiresIn: '7d'});
 
             res.cookie("token", token, {
                 httpOnly: true,
@@ -113,7 +126,7 @@ app.post("/login", async (req, res) => {
 
 app.get("/profile", verifyToken, async (req, res) => {
     try{
-        const response = await db.query(`SELECT id, first_name, last_name, email, phone FROM users WHERE id = $1`, [req.user.id]);
+        const response = await db.query(`SELECT id, first_name, last_name, email, phone, role FROM users WHERE id = $1`, [req.user.id]);
         res.send({status: "success", user: response.rows[0]});
         
     }
