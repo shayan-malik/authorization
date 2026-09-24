@@ -41,13 +41,12 @@ function verifyToken(req, res, next) {
 };
 
 
-
 app.post("/signup", async (req, res) => {
     try{
         const body = req.body;
         const hashedPassword = await bcrypt.hash(body.password, 10)
     
-        const response = await db.query(`INSERT INTO users (first_name, last_name, email, password_hash, phone) VALUES ($1, $2, $3, $4, $5) RETURNING *`, [body.first_name, body.last_name, body.email, hashedPassword, body.phone]);
+        const response = await db.query(`INSERT INTO users (first_name, last_name, email, password_hash, phone role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`, [body.first_name, body.last_name, body.email, hashedPassword, body.phone, body.role]);
 
         const { password_hash, ...safeUser } = response.rows[0];
 
