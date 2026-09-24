@@ -59,7 +59,7 @@ app.post("/signup", async (req, res) => {
         const body = req.body;
         const hashedPassword = await bcrypt.hash(body.password, 10)
     
-        const response = await db.query(`INSERT INTO users (first_name, last_name, email, password_hash, phone, role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`, [body.first_name, body.last_name, body.email, hashedPassword, body.phone, body.role]);
+        const response = await db.query(`INSERT INTO users (first_name, last_name, email, password_hash, phone, role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`, [body.first_name, body.last_name, body.email, hashedPassword, body.phone, body.role || `buyer`]);
 
         const { password_hash, ...safeUser } = response.rows[0];
 
