@@ -69,7 +69,11 @@ app.post("/signup", async (req, res) => {
 
     catch(error){
         console.log("error", error);
-        res.send("Internal Server Error");
+
+        if(error.code === '23505'){
+            return res.send({status: "error", message: "Email already exist"})
+        }
+        res.send({status:"error", message: "Internal Server Error"});
     }
 });
 
