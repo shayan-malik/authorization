@@ -10,21 +10,16 @@ import "dotenv/config";
 const app = express();
 const PORT = 4000;
 
+app.use(cors({origin: ["https://authorization-authentication-a3x8.vercel.app", "http://localhost:3000"], credentials: true}));
 app.use(express.json());
 app.use(cookieParser())
-app.use(cors({origin: ["https://authorization-authentication-a3x8.vercel.app", "http://localhost:3000"], credentials: true}));
 
 
 function verifyToken(req, res, next) {
-    const token = req.cookie.token
+    const token = req.cookies?.token
 
     if(!token){
         return res.status(401).send({status: "error", message: "No token provided"});
-    }
-
-
-    if(!token){
-        return res.status(401).send({status: "error", message: "Token format invalid"});
     }
 
     try{
