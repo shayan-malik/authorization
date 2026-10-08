@@ -12,17 +12,16 @@ const PORT = 4000;
 
 app.use(express.json());
 app.use(cookieParser())
-app.use(cors());
+app.use(cors({origin: "https://authorization-authentication-a3x8.vercel.app", origin: "http://localhost:3000", credentials: true}));
 
 
 function verifyToken(req, res, next) {
-    const authHeader = req.headers.authorization;
+    const token = req.cookie.token
 
-    if(!authHeader){
+    if(!token){
         return res.status(401).send({status: "error", message: "No token provided"});
     }
 
-    const token = authHeader.split(" ")[1];
 
     if(!token){
         return res.status(401).send({status: "error", message: "Token format invalid"});
@@ -102,8 +101,9 @@ app.post("/login", async (req, res) => {
 
             res.cookie("token", token, {
                 httpOnly: true,
-                secure: false,
-                maxAge: 86400000
+                secure: true,
+                maxAge: 86400000,
+                sameSite: "none"
             });
 
             const { password_hash, ...safeUser} = user;
@@ -172,6 +172,13 @@ app.delete("/profile", verifyToken, async (req, res) => {
         res.send({status: "error", message: "Something went wrong"})
     }
 });
+
+
+app.post("/logout", (req, res) => {
+    res.clearCookie("token", { httpOnly: true, secure: true, sameSite: "none"});
+    res.send({status: "success", message: "Logged out"});
+
+})
 
 
 
