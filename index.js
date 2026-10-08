@@ -97,13 +97,13 @@ app.post("/login", async (req, res) => {
             res.cookie("token", token, {
                 httpOnly: true,
                 secure: true,
-                maxAge: 86400000,
-                sameSite: "none"
+                maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+                sameSite: "lax" // Adjust based on your frontend domain
             });
 
             const { password_hash, ...safeUser} = user;
 
-            res.send({status: "success", message: "Login Successfully", token, user: safeUser});
+            res.send({status: "success", message: "Login Successfully", user: safeUser});
 
             
         }
@@ -170,7 +170,7 @@ app.delete("/profile", verifyToken, async (req, res) => {
 
 
 app.post("/logout", (req, res) => {
-    res.clearCookie("token", { httpOnly: true, secure: true, sameSite: "none"});
+    res.clearCookie("token", { httpOnly: true, secure: true, sameSite: "lax"});
     res.send({status: "success", message: "Logged out"});
 
 })
