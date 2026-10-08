@@ -12,7 +12,7 @@ const PORT = 4000;
 
 app.use(express.json());
 app.use(cookieParser())
-app.use(cors({origin: "https://authorization-authentication-a3x8.vercel.app", origin: "http://localhost:3000", credentials: true}));
+app.use(cors({origin: ["https://authorization-authentication-a3x8.vercel.app", "http://localhost:3000"], credentials: true}));
 
 
 function verifyToken(req, res, next) {
